@@ -1,13 +1,16 @@
 import json
 import requests
+from mcp.server.fastmcp import FastMCP
 
+mcp = FastMCP("Weather")
 baseUrl = r'https://api.openweathermap.org/data/2.5/weather?'
 api = open(r"E:\modelContextProtocolServer\__pycache__\apiKey.txt",'r').read()
 
+@mcp.tool()
 def currentWeather(city: str = "Jaspur") -> str:
     url = f"{baseUrl}q={city}&APPID={api}&unit=metric"
     status = requests.get(url)
-    if status.status_code() == 200:
+    if status.status_code == 200:
         data = status.json()
         main = data.get('main', {})
         weather = data.get('weather', [{}])[0]
@@ -20,9 +23,9 @@ def currentWeather(city: str = "Jaspur") -> str:
         return (
             f"Weather in {city}:\n"
             f"Description: {description.capitalize()}\n"
-            f"Temperature: {str(float(temp) - -273.15)}°C\n"
-            f"Feels Like: {feels_like}°C\n"
+            f"Temperature: {f"{float(temp) - 273.15:.2f}"}°C\n"
+            f"Feels Like: {f"{float(feels_like) - 273.15:.2f}"}°C\n"
             f"Wind Speed: {wind_speed} m/s"
         )
     else:
-        return f"Failed to get weather data for {city}. Status code: {status.status_code}"
+        raise RuntimeError(f"Failed to get weather data for {city}. Status code: {status.status_code}")
