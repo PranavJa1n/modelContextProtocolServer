@@ -12,7 +12,7 @@ def capturePhoto(path: str, show: bool = False, name: str = "captured_photo.jpg"
         success = cv2.imwrite(os.path.join(path, name), frame)
         cam.release()
         if not success:
-            return "Failed to write image to specified path"
+            raise RuntimeError("Failed to write image to specified path")
         if show:
             cv2.imshow("Hello", frame)
             cv2.waitKey(time)
@@ -22,7 +22,7 @@ def capturePhoto(path: str, show: bool = False, name: str = "captured_photo.jpg"
             return "Successfully captured the image"
     else :
         cam.release()
-        return "Error occured while opening camera"
+        raise RuntimeError("Error occured while opening camera")
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
