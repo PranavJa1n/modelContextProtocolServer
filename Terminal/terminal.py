@@ -22,14 +22,15 @@ def is_unsafe(cmd: str) -> bool:
 @mcp.tool()
 def cmdRun(what: str) -> str:
     if is_unsafe(what):
-        return f"❌ Command blocked for safety: contains a restricted operation"
+        raise RuntimeError(f"❌ Command blocked for safety: contains a restricted operation")
 
     try:
         result = subprocess.run(what, shell=True, text=True, capture_output=True)
+        if len(result.stderr) != 0:
+            raise RuntimeError()
         return result.stdout.strip() if result.stdout else result.stderr.strip()
     except Exception as e:
-        return f"⚠️ Error: {str(e)}"
-
+        raise RuntimeError(f"⚠️ Error: {str(e)}")
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
